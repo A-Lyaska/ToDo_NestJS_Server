@@ -1,19 +1,12 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
-import CreateTodoDto from './DB/Data Transfer Object/create.dto';
-import { TodoService } from './toDo.service';
-import { UpdateTodoDto } from './DB/Data Transfer Object/update.dto';
+
+import { Body, Controller, Delete, Get, Param, Post, Put, } from '@nestjs/common';
+import CreateTodoDto from './db/dto/create.dto';
+import { TodosService } from './toDo.service';
+import { UpdateTodoDto } from './db/dto/update.dto';
 
 @Controller('todos')
-export class TodoController {
-  constructor(private readonly todosService: TodoService) {}
+export class TodosController {
+  constructor(private readonly todosService: TodosService) {}
 
   // get all todos
   @Get()
@@ -24,7 +17,7 @@ export class TodoController {
   // get todo by id
   @Get(':id')
   getTodoById(@Param('id') id: string) {
-    return this.todosService.getTodoById(String(id));
+    return this.todosService.getTodoById(Number(id));
   }
 
   // create todo
@@ -36,12 +29,12 @@ export class TodoController {
   // update todo
   @Put(':id')
   async updatePost(@Param('id') id: string, @Body() todo: UpdateTodoDto) {
-    return this.todosService.updateTodo(String(id), todo);
+    return this.todosService.updateTodo(Number(id), todo);
   }
 
   //delete todo
   @Delete(':id')
   async deleteTodo(@Param('id') id: string) {
-    this.todosService.deleteTodo(String(id));
+    this.todosService.deleteTodo(Number(id));
   }
 }

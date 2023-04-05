@@ -1,19 +1,18 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { DataType } from 'sequelize-typescript';
 
 @Entity()
-class Post {
+export class Todo {
   @PrimaryGeneratedColumn()
-  public id: string;
+  public id: number;
 
   @Column()
   public title: string;
 
   @Column()
-  public description: string;
+  public content: string;
 
   @Column()
-  public isCompleted: boolean;
+  public f_done: boolean;
 }
 
-export default Post;
+export default Todo;

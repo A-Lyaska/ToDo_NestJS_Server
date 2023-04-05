@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TodoController } from './toDo.controller';
-import { TodoService } from './toDo.service';
-import { DatabaseModule } from './DB/db.module';
 import * as Joi from 'joi';
+import { DatabaseModule } from './db/db.module';
+import { TodosModule } from './toDo.module';
 
 @Module({
   imports: [
@@ -19,8 +18,9 @@ import * as Joi from 'joi';
       }),
     }),
     DatabaseModule,
+    TodosModule,
   ],
-  controllers: [TodoController],
-  providers: [TodoService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

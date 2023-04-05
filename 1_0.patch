@@ -1,0 +1,393 @@
+Subject: [PATCH] 1.0
+---
+Index: src/db/Data Transfer Object/create.dto.ts
+===================================================================
+diff --git a/src/db/Data Transfer Object/create.dto.ts b/src/db/Data Transfer Object/create.dto.ts
+deleted file mode 100644
+--- a/src/db/Data Transfer Object/create.dto.ts	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
++++ /dev/null	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
+@@ -1,7 +0,0 @@
+-export class CreateTodoDto {
+-  title: string;
+-  description: string;
+-  isCompleted: boolean;
+-}
+-
+-export default CreateTodoDto;
+Index: src/db/Data Transfer Object/update.dto.ts
+===================================================================
+diff --git a/src/db/Data Transfer Object/update.dto.ts b/src/db/Data Transfer Object/update.dto.ts
+deleted file mode 100644
+--- a/src/db/Data Transfer Object/update.dto.ts	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
++++ /dev/null	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
+@@ -1,8 +0,0 @@
+-export class UpdateTodoDto {
+-  id: string;
+-  title: string;
+-  description: string;
+-  isCompleted: boolean;
+-}
+-
+-export default UpdateTodoDto;
+Index: src/db/db.module.ts
+===================================================================
+diff --git a/src/db/db.module.ts b/src/db/db.module.ts
+deleted file mode 100644
+--- a/src/db/db.module.ts	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
++++ /dev/null	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
+@@ -1,27 +0,0 @@
+-import { Module } from '@nestjs/common';
+-import { ConfigModule, ConfigService } from '@nestjs/config';
+-import { TypeOrmModule } from '@nestjs/typeorm';
+-import { join } from 'path';
+-
+-@Module({
+-  imports: [
+-    TypeOrmModule.forRootAsync({
+-      imports: [ConfigModule],
+-      inject: [ConfigService],
+-      useFactory: (configService: ConfigService) => ({
+-        type: 'postgres',
+-        host: configService.get('POSTGRES_HOST'),
+-        port: configService.get('POSTGRES_PORT'),
+-        username: configService.get('POSTGRES_USER'),
+-        password: configService.get('POSTGRES_PASSWORD'),
+-        database: configService.get('POSTGRES_DB'),
+-        entities: [join(__dirname, '**', '*.entity.{ts,js}')],
+-        ssl: {
+-          rejectUnauthorized: false,
+-        },
+-        synchronize: true, //should be false at production!
+-      }),
+-    }),
+-  ],
+-})
+-export class DatabaseModule {}
+Index: src/db/post.entity.ts
+===================================================================
+diff --git a/src/db/post.entity.ts b/src/db/post.entity.ts
+deleted file mode 100644
+--- a/src/db/post.entity.ts	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
++++ /dev/null	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
+@@ -1,19 +0,0 @@
+-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+-import { DataType } from 'sequelize-typescript';
+-
+-@Entity()
+-class Post {
+-  @PrimaryGeneratedColumn()
+-  public id: string;
+-
+-  @Column()
+-  public title: string;
+-
+-  @Column()
+-  public description: string;
+-
+-  @Column()
+-  public isCompleted: boolean;
+-}
+-
+-export default Post;
+Index: src/toDo.controller.ts
+===================================================================
+diff --git a/src/toDo.controller.ts b/src/toDo.controller.ts
+deleted file mode 100644
+--- a/src/toDo.controller.ts	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
++++ /dev/null	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
+@@ -1,47 +0,0 @@
+-import {
+-  Body,
+-  Controller,
+-  Delete,
+-  Get,
+-  Param,
+-  Post,
+-  Put,
+-} from '@nestjs/common';
+-import CreateTodoDto from './DB/Data Transfer Object/create.dto';
+-import { TodoService } from './toDo.service';
+-import { UpdateTodoDto } from './DB/Data Transfer Object/update.dto';
+-
+-@Controller('todos')
+-export class TodoController {
+-  constructor(private readonly todosService: TodoService) {}
+-
+-  // get all todos
+-  @Get()
+-  getTodos() {
+-    return this.todosService.getAllTodos();
+-  }
+-
+-  // get todo by id
+-  @Get(':id')
+-  getTodoById(@Param('id') id: string) {
+-    return this.todosService.getTodoById(String(id));
+-  }
+-
+-  // create todo
+-  @Post()
+-  async createTodo(@Body() todo: CreateTodoDto) {
+-    return this.todosService.createTodo(todo);
+-  }
+-
+-  // update todo
+-  @Put(':id')
+-  async updatePost(@Param('id') id: string, @Body() todo: UpdateTodoDto) {
+-    return this.todosService.updateTodo(String(id), todo);
+-  }
+-
+-  //delete todo
+-  @Delete(':id')
+-  async deleteTodo(@Param('id') id: string) {
+-    this.todosService.deleteTodo(String(id));
+-  }
+-}
+Index: src/toDo.module.ts
+===================================================================
+diff --git a/src/toDo.module.ts b/src/toDo.module.ts
+deleted file mode 100644
+--- a/src/toDo.module.ts	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
++++ /dev/null	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
+@@ -1,12 +0,0 @@
+-import { Module } from '@nestjs/common';
+-import { TypeOrmModule } from '@nestjs/typeorm';
+-import Todo from './DB/post.entity';
+-import { TodoService } from './toDo.service';
+-import { TodoController } from './toDo.controller';
+-
+-@Module({
+-  imports: [TypeOrmModule.forFeature([Todo])],
+-  controllers: [TodoController],
+-  providers: [TodoService],
+-})
+-export class TodoModule {}
+Index: src/toDo.service.ts
+===================================================================
+diff --git a/src/toDo.service.ts b/src/toDo.service.ts
+deleted file mode 100644
+--- a/src/toDo.service.ts	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
++++ /dev/null	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
+@@ -1,55 +0,0 @@
+-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+-import { InjectRepository } from '@nestjs/typeorm';
+-import { Repository } from 'typeorm';
+-import CreateTodoDto from './DB/Data Transfer Object/create.dto';
+-import Todo from './DB/post.entity';
+-import { UpdateTodoDto } from './DB/Data Transfer Object/update.dto';
+-
+-@Injectable()
+-export class TodoService {
+-  constructor(
+-    @InjectRepository(Todo) private todoRepository: Repository<Todo>,
+-  ) {}
+-
+-  // find all
+-  getAllTodos() {
+-    return this.todoRepository.find();
+-  }
+-
+-  // find by id
+-  async getTodoById(id) {
+-    const todo = await this.todoRepository.findOne(id);
+-    if (todo) {
+-      return todo;
+-    }
+-
+-    throw new HttpException('Todo not found', HttpStatus.NOT_FOUND);
+-  }
+-
+-  // create
+-  async createTodo(todo: CreateTodoDto) {
+-    const newTodo = await this.todoRepository.create(todo);
+-    await this.todoRepository.save(newTodo);
+-
+-    return newTodo;
+-  }
+-
+-  // update
+-  async updateTodo(id, post: UpdateTodoDto) {
+-    await this.todoRepository.update(id, post);
+-    const updatedTodo = await this.todoRepository.findOne(id);
+-    if (updatedTodo) {
+-      return updatedTodo;
+-    }
+-
+-    throw new HttpException('Todo not found', HttpStatus.NOT_FOUND);
+-  }
+-
+-  // delete
+-  async deleteTodo(id: string) {
+-    const deletedTodo = await this.todoRepository.delete(id);
+-    if (!deletedTodo.affected) {
+-      throw new HttpException('Todo not found', HttpStatus.NOT_FOUND);
+-    }
+-  }
+-}
+Index: src/main.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main.ts b/src/main.ts
+--- a/src/main.ts	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
++++ b/src/main.ts	(date 1680713489502)
+@@ -1,8 +1,9 @@
+ import { NestFactory } from '@nestjs/core';
+-import { TodoModule } from './toDo.module';
++import { AppModule } from './app.module';
++import "reflect-metadata";
+ 
+ async function bootstrap() {
+-  const app = await NestFactory.create(TodoModule);
++  const app = await NestFactory.create(AppModule);
+   await app.listen(3000);
+ }
+ bootstrap();
+Index: package.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/package.json b/package.json
+--- a/package.json	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
++++ b/package.json	(date 1680713074013)
+@@ -41,7 +41,7 @@
+     "@nestjs/testing": "^9.0.0",
+     "@types/express": "^4.17.13",
+     "@types/jest": "29.2.4",
+-    "@types/node": "^18.11.18",
++    "@types/node": "^18.15.11",
+     "@types/supertest": "^2.0.11",
+     "@typescript-eslint/eslint-plugin": "^5.0.0",
+     "@typescript-eslint/parser": "^5.0.0",
+Index: src/app.module.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/app.module.ts b/src/app.module.ts
+--- a/src/app.module.ts	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
++++ b/src/app.module.ts	(date 1680714262668)
+@@ -1,26 +1,11 @@
+ import { Module } from '@nestjs/common';
+-import { ConfigModule } from '@nestjs/config';
+-import { TodoController } from './toDo.controller';
+-import { TodoService } from './toDo.service';
+-import { DatabaseModule } from './DB/db.module';
+-import * as Joi from 'joi';
++import { DatabaseModule } from './database/database.module';
+ 
+ @Module({
+   imports: [
+-    ConfigModule.forRoot({
+-      envFilePath: '.env',
+-      validationSchema: Joi.object({
+-        POSTGRES_HOST: Joi.string().required(),
+-        POSTGRES_PORT: Joi.number().required(),
+-        POSTGRES_USER: Joi.string().required(),
+-        POSTGRES_PASSWORD: Joi.string().required(),
+-        POSTGRES_DB: Joi.string().required(),
+-        PORT: Joi.number(),
+-      }),
+-    }),
+     DatabaseModule,
+   ],
+-  controllers: [TodoController],
+-  providers: [TodoService],
++  controllers: [],
++  providers: [],
+ })
+-export class AppModule {}
++export class AppModule {}
+\ No newline at end of file
+Index: package-lock.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/package-lock.json b/package-lock.json
+--- a/package-lock.json	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
++++ b/package-lock.json	(date 1680713092171)
+@@ -30,7 +30,7 @@
+         "@nestjs/testing": "^9.0.0",
+         "@types/express": "^4.17.13",
+         "@types/jest": "29.2.4",
+-        "@types/node": "^18.11.18",
++        "@types/node": "^18.15.11",
+         "@types/supertest": "^2.0.11",
+         "@typescript-eslint/eslint-plugin": "^5.0.0",
+         "@typescript-eslint/parser": "^5.0.0",
+@@ -2121,9 +2121,9 @@
+       "integrity": "sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA=="
+     },
+     "node_modules/@types/node": {
+-      "version": "18.11.18",
+-      "resolved": "https://registry.npmjs.org/@types/node/-/node-18.11.18.tgz",
+-      "integrity": "sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA=="
++      "version": "18.15.11",
++      "resolved": "https://registry.npmjs.org/@types/node/-/node-18.15.11.tgz",
++      "integrity": "sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q=="
+     },
+     "node_modules/@types/parse-json": {
+       "version": "4.0.0",
+Index: .env
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.env b/.env
+--- a/.env	(revision 3047d1395c58065ea6b03c0e7490fa8982f4093d)
++++ b/.env	(date 1680713624246)
+@@ -1,5 +1,5 @@
+ POSTGRES_HOST=localhost
+-POSTGRES_PORT=6000
+-POSTGRES_USER=postgres
+-POSTGRES_PASSWORD=qwerty10
+-POSTGRES_DB=todolist
++POSTGRES_PORT=5432
++POSTGRES_USER=myuser
++POSTGRES_PASSWORD=mypassword
++POSTGRES_DB=todolist_app
+Index: src/DataBase/database.config.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/DataBase/database.config.ts b/src/DataBase/database.config.ts
+new file mode 100644
+--- /dev/null	(date 1680714102115)
++++ b/src/DataBase/database.config.ts	(date 1680714102115)
+@@ -0,0 +1,12 @@
++import { TypeOrmModuleOptions } from '@nestjs/typeorm';
++
++export const databaseConfig: TypeOrmModuleOptions = {
++  type: 'postgres',
++  host: 'localhost',
++  port: 5432,
++  username: 'postgres',
++  password: 'password',
++  database: 'my_database',
++  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
++  synchronize: true,
++};
+Index: src/DataBase/database.module.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/DataBase/database.module.ts b/src/DataBase/database.module.ts
+new file mode 100644
+--- /dev/null	(date 1680714262674)
++++ b/src/DataBase/database.module.ts	(date 1680714262674)
+@@ -0,0 +1,10 @@
++import { Module } from '@nestjs/common';
++import { TypeOrmModule } from '@nestjs/typeorm';
++import { databaseConfig } from './database.config';
++
++@Module({
++  imports: [
++    TypeOrmModule.forRoot(databaseConfig),
++  ],
++})
++export class DatabaseModule {}
