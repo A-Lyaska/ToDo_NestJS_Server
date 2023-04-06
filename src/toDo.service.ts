@@ -13,43 +13,75 @@ export class TodosService {
 
   // find all
   getAllTodos() {
-    return this.todoRepository.find();
+    try {
+      return this.todoRepository.find();
+    } catch (error) {
+      throw new HttpException('Ошибка', HttpStatus.BAD_REQUEST);
+    }
   }
 
   // find by id
   async getTodoById(id: number) {
-    const todo = await this.todoRepository.findOne({ where: { id } });
-    if (todo) {
-      return todo;
+    try {
+      const todo = await this.todoRepository.findOne({ where: { id } });
+      if (todo) {
+        return todo;
+      }
+    } catch (error) {
+      throw new HttpException(
+        'Todo не найдено или не существует',
+        HttpStatus.NOT_FOUND,
+      );
     }
-
-    throw new HttpException('Todo not found', HttpStatus.NOT_FOUND);
   }
 
   // create
   async createTodo(todo: CreateTodoDto) {
-    const newTodo = await this.todoRepository.create(todo);
-    await this.todoRepository.save(newTodo);
-
-    return newTodo;
+    try {
+      const newTodo = await this.todoRepository.create(todo);
+      await this.todoRepository.save(newTodo);
+      return newTodo;
+    } catch (error) {
+      throw new HttpException('Ошибка', HttpStatus.BAD_REQUEST);
+    }
   }
 
   // update
   async updateTodo(id: number, post: UpdateTodoDto) {
-    await this.todoRepository.update(id, post);
-    const updatedTodo = await this.todoRepository.findOne({ where: { id } });
-    if (updatedTodo) {
-      return updatedTodo;
+    try {
+      await this.todoRepository.update(id, post);
+      const updatedTodo = await this.todoRepository.findOne({ where: { id } });
+      if (updatedTodo) {
+        return updatedTodo;
+      }
+    } catch (error) {
+      throw new HttpException(
+        'Todo не найдено или не существует',
+        HttpStatus.NOT_FOUND,
+      );
     }
-
-    throw new HttpException('Todo not found', HttpStatus.NOT_FOUND);
   }
 
   // delete
   async deleteTodo(id: number) {
-    const deletedTodo = await this.todoRepository.delete(id);
-    if (!deletedTodo.affected) {
-      throw new HttpException('Todo not found', HttpStatus.NOT_FOUND);
+    try {
+      return this.todoRepository.delete(id);
+    } catch (error) {
+      throw new HttpException(
+        'Todo не найдено или не существует',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  async deleteAll() {
+    try {
+      return this.todoRepository.clear();
+    } catch (error) {
+      throw new HttpException(
+        'Ошибка',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

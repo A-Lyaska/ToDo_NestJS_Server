@@ -1,5 +1,12 @@
-
-import { Body, Controller, Delete, Get, Param, Post, Put, } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import CreateTodoDto from './db/dto/create.dto';
 import { TodosService } from './toDo.service';
 import { UpdateTodoDto } from './db/dto/update.dto';
@@ -16,25 +23,33 @@ export class TodosController {
 
   // get todo by id
   @Get(':id')
-  getTodoById(@Param('id') id: string) {
-    return this.todosService.getTodoById(Number(id));
+  getTodoById(@Param('id') id: number) {
+    return this.todosService.getTodoById(id);
   }
 
   // create todo
   @Post()
-  async createTodo(@Body() todo: CreateTodoDto) {
+  createTodo(@Body() todo: CreateTodoDto) {
     return this.todosService.createTodo(todo);
   }
 
   // update todo
-  @Put(':id')
-  async updatePost(@Param('id') id: string, @Body() todo: UpdateTodoDto) {
-    return this.todosService.updateTodo(Number(id), todo);
+  @Patch(':id')
+  updatePost(@Param('id') id: number, @Body() todo: UpdateTodoDto) {
+    return this.todosService.updateTodo(id, todo);
   }
 
   //delete todo
   @Delete(':id')
-  async deleteTodo(@Param('id') id: string) {
-    this.todosService.deleteTodo(Number(id));
+  deleteTodo(@Param('id') id: number) {
+    this.todosService.deleteTodo(id);
+    return 'Todo с id: {id} удалена';
+  }
+
+  //delete all todo
+  @Delete()
+  deleteAll() {
+    this.todosService.deleteAll();
+    return 'Все Todo удалены';
   }
 }
