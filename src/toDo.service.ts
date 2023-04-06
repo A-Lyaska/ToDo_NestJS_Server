@@ -78,10 +78,7 @@ export class TodosService {
     try {
       return this.todoRepository.clear();
     } catch (error) {
-      throw new HttpException(
-        'Ошибка',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('Ошибка', HttpStatus.BAD_REQUEST);
     }
   }
 }
