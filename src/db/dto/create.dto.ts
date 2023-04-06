@@ -1,8 +1,8 @@
 
 export class CreateTodoDto {
   title: string;
-  content: string;
-  f_done: boolean;
+  description: string;
+  isCompleted: boolean;
 }
 
 export default CreateTodoDto;

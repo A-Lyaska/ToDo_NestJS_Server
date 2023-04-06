@@ -1,8 +1,8 @@
 export class UpdateTodoDto {
   id: number;
   title: string;
-  content: string;
-  f_done: boolean;
+  description: string;
+  isCompleted: boolean;
 }
 
 export default UpdateTodoDto;

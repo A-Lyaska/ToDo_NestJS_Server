@@ -9,10 +9,10 @@ export class Todo {
   public title: string;
 
   @Column()
-  public content: string;
+  public description: string;
 
   @Column()
-  public f_done: boolean;
+  public isCompleted: boolean;
 }
 
 export default Todo;
