@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Todo from './db/todo.entity';
+import Todo from '../entity/todo.entity';
 import { TodosService } from './toDo.service';
 import { TodosController } from './toDo.controller';
 

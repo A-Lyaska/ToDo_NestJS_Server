@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { DatabaseModule } from './db/db.module';
-import { TodosModule } from './toDo.module';
+import { DatabaseModule } from '../db/db.module';
+import { TodosModule } from '../todo/toDo.module';
 
 @Module({
   imports: [

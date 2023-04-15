@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Todo } from './todo.entity';
-import { ConfigModule } from '@nestjs/config';
+import { Todo } from '../entity/todo.entity';
 import * as process from 'process';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -12,7 +12,7 @@ import * as process from 'process';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
-      port: parseInt(process.env.POSTGRES_PORT),
+      port: Number(process.env.POSTGRES_PORT),
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,

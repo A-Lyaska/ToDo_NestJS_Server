@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import CreateTodoDto from './db/dto/create.dto';
-import Todo from './db/todo.entity';
-import { UpdateTodoDto } from './db/dto/update.dto';
+import CreateTodoDto from '../db/dto/create.dto';
+import Todo from '../entity/todo.entity';
+import { UpdateTodoDto } from '../db/dto/update.dto';
 
 @Injectable()
 export class TodosService {
@@ -65,7 +65,7 @@ export class TodosService {
   // delete
   async deleteTodo(id: number) {
     try {
-      return this.todoRepository.delete(id);
+      return await this.todoRepository.delete(id);
     } catch (error) {
       throw new HttpException(
         'Todo не найдено или не существует',
@@ -74,6 +74,7 @@ export class TodosService {
     }
   }
 
+  //delete all
   async deleteAll() {
     try {
       return this.todoRepository.clear();

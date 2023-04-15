@@ -7,15 +7,15 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import CreateTodoDto from './db/dto/create.dto';
+import CreateTodoDto from '../db/dto/create.dto';
 import { TodosService } from './toDo.service';
-import { UpdateTodoDto } from './db/dto/update.dto';
+import { UpdateTodoDto } from '../db/dto/update.dto';
 
 @Controller('todos')
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 
-  // get all todos
+  // get all todo
   @Get()
   getTodos() {
     return this.todosService.getAllTodos();
