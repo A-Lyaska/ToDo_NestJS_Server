@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Todo } from '../entity/todo.entity';
+import { Todo } from './entity/todo.entity';
 import * as process from 'process';
 import { ConfigModule } from '@nestjs/config';
 
