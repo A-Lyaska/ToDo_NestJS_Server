@@ -6,16 +6,19 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
-import CreateTodoDto from '../dto/create.dto';
+import CreateTodoDto from '../dto/create_db.dto';
 import { TodosService } from './toDo.service';
-import { UpdateTodoDto } from '../dto/update.dto';
+import { UpdateTodoDto } from '../dto/update_db.dto';
+import { JwtAuthGuard } from 'src/auth/auth.guard';
 
 @Controller('todos')
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 
   // get all todo
+  @UseGuards(JwtAuthGuard)
   @Get()
   getTodos() {
     return this.todosService.getAllTodos();
