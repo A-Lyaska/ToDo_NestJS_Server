@@ -16,4 +16,6 @@ export class AuthController {
     registration(@Body() userDto: CreateUserDto) {
         return this.authService.registration(userDto)
     }
+
+    //токен чек, который должен вернуть месаедж ок, если ок токен, 
 }

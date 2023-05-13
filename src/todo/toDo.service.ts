@@ -12,6 +12,7 @@ export class TodosService {
   ) {}
 
   // find all
+  // сделать роли, получение по id и userid. Один ко многим
   getAllTodos() {
     try {
       return this.todoRepository.find();
