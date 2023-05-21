@@ -17,7 +17,7 @@ import { UserModule } from 'src/users/user.module';
       })
   ],
     exports: [
-        AuthService,
+        AuthService ,
         JwtModule
     ]
 })
