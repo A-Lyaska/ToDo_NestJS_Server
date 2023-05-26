@@ -1,18 +1,39 @@
-import { IsDefined } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Table, Column, Model, DataType, HasMany } from "sequelize-typescript";
+import { Token } from "./token.entity";
+import { Todo } from "./todo.entity";
 
-@Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  public id: number;
+@Table({ tableName: "users" })
+export class User extends Model {
+    @Column({
+        type: DataType.UUID,
+        primaryKey: true,
+        defaultValue: DataType.UUIDV4,
+    })
+    userId: string;
 
-  @Column({unique: true})
-  @IsDefined()
-  public email: string;
+    @Column({
+        type: DataType.STRING,
+        defaultValue: '',
+    })
+    email: string;
 
-  @Column()
-  @IsDefined()
-  public password: string;
+    @Column({
+        type: DataType.STRING,
+        defaultValue: '',
+    })
+    login: string;
+
+    @Column({
+        type: DataType.STRING,
+        defaultValue: '',
+    })
+    password: string;
+
+    @HasMany(() => Todo)
+    todos: Todo[];
+
+    @HasMany(() => Token)
+    tokens: Token[];
 }
 
-export default User;
+export default Todo;

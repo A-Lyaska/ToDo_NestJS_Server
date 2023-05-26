@@ -1,45 +1,44 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from "@nestjs/jwt";
-import * as bcrypt from 'bcryptjs'
-import CreateUserDto from 'src/dto/create_user.dto';
-import User from 'src/entities/user.entity';
-import { UsersService } from 'src/users/user.service';
+import { ConflictException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import UserDto from 'src/dto/user.dto';
+import { Token } from 'src/entities/token.entity';
+import { nanoid } from 'nanoid';
+import { Repository } from 'typeorm';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class AuthService {
 
-    constructor(private userService: UsersService,
-        private jwtService: JwtService) { }
-
-    async login(userDto: CreateUserDto) { //поменять dto на другие, чтобы не create
-        const user = await this.validateUser(userDto)
-        return this.generateToken(user)
-    }
-
-    async registration(userDto: CreateUserDto) {
-        const candidate = await this.userService.getUserByEmail(userDto.email);
-        if (candidate) {
-            throw new HttpException('Пользователь с таким email существует', HttpStatus.BAD_REQUEST);
-        }
-        const hashPassword = await bcrypt.hash(userDto.password, 5);
-        const user = await this.userService.createUser({ ...userDto, password: hashPassword })
-        return this.generateToken(user)
-    }
-
-    private async generateToken(user: User) {
-        const payload = { email: user.email, id: user.id }
-        return {
-            token: this.jwtService.sign(payload)
+    async regUser(user: UserDto) {
+        try{
+            if (User.findOne({ where: { email: user.email } })) {
+                throw new ConflictException('Пользователь с таким email уже существует')
+            }
+            if (User.findOne({ where: { login: user.login } })) {
+                throw new ConflictException('Пользователь с таким логином уже существует')
+            }
+            const newUser = await User.create({
+                ...user,
+            });
+            return newUser;
+        } catch (error) {
+            throw new HttpException('Ошибка', HttpStatus.BAD_REQUEST);
         }
     }
 
-    private async validateUser(userDto: CreateUserDto) { //поменять dto на другие, чтобы не create
-        const user = await this.userService.getUserByEmail(userDto.email);
-        const passwordEquals = await bcrypt.compare(userDto.password, user.password);
-        if (!user || !passwordEquals) {
-            throw new UnauthorizedException({ message: 'Некорректный емайл или пароль' })
+    async loginUser(user: UserDto){
+        const userExist = await User.findOne({ where: { login: user.login, password: user.password } });
+        if (!userExist) {
+            throw new NotFoundException('Неверный логин или пароль')
         }
-        return user;
+        const tokenExist = await Token.findOne({ where: { userId: userExist.userId } });
+        if (tokenExist) {
+            return 'Ваш токен - ' + tokenExist.value;
+        }
+        const token = nanoid(20);
+        const newToken = await Token.create({
+            userId: userExist.userId,
+            value: token,
+        });
+        return newToken.value;
     }
-    //сделать удаление токена, метод проверки валидации токена. Я отправляю тебе 
 }

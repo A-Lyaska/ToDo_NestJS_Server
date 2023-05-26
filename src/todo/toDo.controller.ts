@@ -6,12 +6,14 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import CreateTodoDto from '../dto/create_db.dto';
 import { TodosService } from './toDo.service';
 import { UpdateTodoDto } from '../dto/update_db.dto';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
+import { Request } from 'express';
 
 @Controller('todos')
 export class TodosController {
@@ -19,46 +21,40 @@ export class TodosController {
 
   
   // get all todo
-  @UseGuards(JwtAuthGuard)
   @Get()
-  getTodos() {
-    return this.todosService.getAllTodos();
+  getTodos(@Req() req: Request) {
+    return this.todosService.getAllTodos(req['userId']);
   }
 
   // get todo by id
-  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  getTodoById(@Param('id') id: number) {
-    return this.todosService.getTodoById(id);
+  getTodoById(@Req() req: Request, @Param('id') id: string) {
+    return this.todosService.getTodoById(id, req['userId']);
   }
 
   // create todo
-  @UseGuards(JwtAuthGuard)
   @Post()
-  createTodo(@Body() todo: CreateTodoDto) {
-    return this.todosService.createTodo(todo);
+  createTodo(@Body() todo: CreateTodoDto, @Req() req: Request) {
+    return this.todosService.createTodo(todo, req['userId']);
   }
 
   // update todo
-  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  updatePost(@Param('id') id: number, @Body() todo: UpdateTodoDto) {
-    return this.todosService.updateTodo(id, todo);
+  updatePost(@Param('id') id: string, @Body() todo: UpdateTodoDto, @Req() req: Request) {
+    return this.todosService.updateTodo(id, todo, req['userId']);
   }
 
   //delete todo
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  deleteTodo(@Param('id') id: number) {
-    this.todosService.deleteTodo(id);
+  deleteTodo(@Param('id') id: string, @Req() req: Request) {
+    this.todosService.deleteTodo(id, req['userId']);
     return 'Todo с id: {id} удалена';
   }
 
   //delete all todo
-  @UseGuards(JwtAuthGuard)
   @Delete()
-  deleteAll() {
-    this.todosService.deleteAll();
+  deleteAll(@Req() req: Request) {
+    this.todosService.deleteAll(req['userId']);
     return 'Все Todo удалены';
   }
 }

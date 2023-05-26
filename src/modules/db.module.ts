@@ -3,7 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Todo } from '../entities/todo.entity';
 import * as process from 'process';
 import { ConfigModule } from '@nestjs/config';
-import User from 'src/entities/user.entity';
+import { User } from 'src/entities/user.entity';
+import { Token } from 'src/entities/token.entity';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import User from 'src/entities/user.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [Todo, User],
+      entities: [Todo, User, Token],
       ssl: false,
       synchronize: true,
     }),

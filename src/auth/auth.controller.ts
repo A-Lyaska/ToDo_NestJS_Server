@@ -1,21 +1,25 @@
-import {Body, Controller, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Post} from '@nestjs/common';
 import {AuthService} from "./auth.service";
-import CreateUserDto from 'src/dto/create_user.dto';
+import CreateUserDto, { UserDto } from 'src/dto/user.dto';
+import { TokenService } from 'src/token/token.service';
 
 @Controller('auth')
 export class AuthController {
 
-    constructor(private authService: AuthService) {}
+    constructor(private readonly authService: AuthService, private readonly tokenService: TokenService,) {}
+
+    @Post('/reg')
+    registration(@Body() user: UserDto) {
+        return this.authService.regUser(user)
+    }
 
     @Post('/login')
-    login(@Body() userDto: CreateUserDto) {
-        return this.authService.login(userDto)
+    async login(@Body() user: UserDto) {
+        return await this.authService.loginUser(user);
     }
 
-    @Post('/registration')
-    registration(@Body() userDto: CreateUserDto) {
-        return this.authService.registration(userDto)
+    @Post('/logout')
+    async deleteAllTokens() {
+        await this.tokenService.logoutUser();
     }
-
-    //токен чек, который должен вернуть месаедж ок, если ок токен, 
 }
