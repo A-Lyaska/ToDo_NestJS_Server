@@ -10,8 +10,8 @@ export class TokenService {
     private readonly tokenRepository: Repository<Token>,
   ) {}
 
-  async logoutUser() {
-    await this.tokenRepository.clear();
+  async logoutUser(auth_token: string) {
+    await this.tokenRepository.delete({ auth_token: auth_token });
     return "Вы успешно вышли";
   }
 

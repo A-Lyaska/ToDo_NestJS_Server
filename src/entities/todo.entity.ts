@@ -15,7 +15,7 @@ export class Todo {
     @Column({ type: "boolean", default: false })
     isCompleted: boolean;
 
-    @PrimaryGeneratedColumn("uuid")
+    @Column("uuid")
     userId: string;
     
     @ManyToOne(() => User, user => user.todos, { nullable: true })

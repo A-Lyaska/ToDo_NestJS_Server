@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Param, Post} from '@nestjs/common';
 import {AuthService} from "./auth.service";
 import CreateUserDto, { UserDto } from 'src/dto/user.dto';
 import { TokenService } from 'src/token/token.service';
@@ -18,8 +18,8 @@ export class AuthController {
         return await this.authService.loginUser(user);
     }
 
-    @Post('/logout')
-    async deleteAllTokens() {
-        return await this.tokenService.logoutUser();
+    @Post('/logout/:value')
+    async deleteAllTokens(@Param('auth_token') auth_token: string) {
+        return await this.tokenService.logoutUser(auth_token);
     }
 }
