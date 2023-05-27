@@ -20,6 +20,6 @@ export class AuthController {
 
     @Post('/logout')
     async deleteAllTokens() {
-        await this.tokenService.logoutUser();
+        return await this.tokenService.logoutUser();
     }
 }

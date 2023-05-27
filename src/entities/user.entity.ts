@@ -1,39 +1,24 @@
-import { Table, Column, Model, DataType, HasMany } from "sequelize-typescript";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany} from "typeorm";
 import { Token } from "./token.entity";
 import { Todo } from "./todo.entity";
 
-@Table({ tableName: "users" })
-export class User extends Model {
-    @Column({
-        type: DataType.UUID,
-        primaryKey: true,
-        defaultValue: DataType.UUIDV4,
-    })
+@Entity({ name: "users" })
+export class User {
+    @PrimaryGeneratedColumn("uuid")
     userId: string;
 
-    @Column({
-        type: DataType.STRING,
-        defaultValue: '',
-    })
+    @Column({ type: "varchar", default: "" })
     email: string;
 
-    @Column({
-        type: DataType.STRING,
-        defaultValue: '',
-    })
+    @Column({ type: "varchar", default: "" })
     login: string;
 
-    @Column({
-        type: DataType.STRING,
-        defaultValue: '',
-    })
+    @Column({ type: "varchar", default: "" })
     password: string;
 
-    @HasMany(() => Todo)
+    @OneToMany(() => Todo, todo => todo.user)
     todos: Todo[];
 
-    @HasMany(() => Token)
+    @OneToMany(() => Token, token => token.user)
     tokens: Token[];
 }
-
-export default Todo;

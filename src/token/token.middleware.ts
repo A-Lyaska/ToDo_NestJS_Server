@@ -6,12 +6,12 @@ import { TokenService } from './token.service';
 export class CheckTokenMiddleware implements NestMiddleware {
   constructor(private readonly tokenService: TokenService) { }
   async use(req: Request, res: Response, next: NextFunction) {
-    const value = req.headers['value'] as string;
-    if (!value) {
+    const auth_token = req.headers['auth_token'] as string;
+    if (!auth_token) {
       return res.status(401).json({ message: 'Вы неавторизованы' });
     }
     try {
-      const userId = await this.tokenService.checkToken(value);
+      const userId = await this.tokenService.checkToken(auth_token);
       req['userId'] = userId;
       next();
     } catch (err) {

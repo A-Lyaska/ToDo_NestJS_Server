@@ -1,44 +1,23 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { User } from "./user.entity";
-@Table({ tableName: "todos" })
-export class Todo extends Model {
-    @Column({
-        type: DataType.UUID,
-        primaryKey: true,
-        defaultValue: DataType.UUIDV4,
-        allowNull: false
-    })
+
+@Entity()
+export class Todo {
+    @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({
-        type: DataType.STRING,
-        defaultValue: '',
-
-    })
+    @Column({ type: "varchar", default: "" })
     title: string;
 
-    @Column({
-        type: DataType.STRING,
-        defaultValue: '',
-    })
+    @Column({ type: "varchar", default: "" })
     description: string;
 
-    @Column({
-        type: DataType.BOOLEAN,
-        defaultValue: false,
-    })
+    @Column({ type: "boolean", default: false })
     isCompleted: boolean;
 
-    @ForeignKey(() => User)
-    @Column({
-        type: DataType.UUID,
-        allowNull: true,
-    })
+    @PrimaryGeneratedColumn("uuid")
     userId: string;
-
-    @BelongsTo(() => User)
+    
+    @ManyToOne(() => User, user => user.todos, { nullable: true })
     user: User;
-
 }
-
-export default Todo;

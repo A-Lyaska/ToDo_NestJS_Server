@@ -1,15 +1,13 @@
-import { MiddlewareConsumer, Module, forwardRef } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import Todo from '../entities/todo.entity';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { TodosService } from './toDo.service';
 import { TodosController } from './toDo.controller';
-import { DatabaseModule } from 'src/modules/db.module';
-import { AuthModule } from 'src/auth/auth.module';
 import { CheckTokenMiddleware } from 'src/token/token.middleware';
 import { TokenModule } from 'src/token/token.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Todo } from 'src/entities/todo.entity';
 
 @Module({
-  imports:[TokenModule],
+  imports:[TokenModule, TypeOrmModule.forFeature([Todo])],
   controllers: [TodosController],
   providers: [TodosService],
 })

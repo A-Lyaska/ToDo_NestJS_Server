@@ -1,26 +1,14 @@
-import { Table, Column, Model, DataType, BelongsTo, ForeignKey } from "sequelize-typescript";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { User } from "./user.entity";
 
-
-@Table({ tableName: "tokens" })
-export class Token extends Model {
-    @ForeignKey(() => User)
-    @Column({
-        type: DataType.UUID,
-        allowNull: false,
-    })
+@Entity({ name: "tokens" })
+export class Token {
+    @PrimaryGeneratedColumn("uuid")
     userId: string;
 
-    @BelongsTo(() => User)
+    @ManyToOne(() => User, user => user.tokens, { nullable: false })
     user: User;
 
-    @Column({
-        type: DataType.STRING,
-        primaryKey: true,
-        unique: true,
-        allowNull: false,
-    })
-    value: string;
+    @Column({ type: "varchar", primary: true, unique: true, nullable: false })
+    auth_token: string;
 }
-
-export default Token;

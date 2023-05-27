@@ -1,25 +1,28 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import CreateTodoDto from '../dto/create_db.dto';
+import { CreateTodoDto } from '../dto/create_db.dto';
 import { UpdateTodoDto } from '../dto/update_db.dto';
 import { Todo } from 'src/entities/todo.entity';
 
 @Injectable()
 export class TodosService {
-  // find all
+  constructor(
+    @InjectRepository(Todo)
+    private readonly todoRepository: Repository<Todo>,
+  ) {}
+
   async getAllTodos(userId: string) {
     try {
-      return Todo.findAll({ where: { userId: userId } });
+      return this.todoRepository.find({ where: { userId: userId } });
     } catch (error) {
       throw new HttpException('Ошибка', HttpStatus.BAD_REQUEST);
     }
   }
 
-  // find by id
   async getTodoById(id: string, userId: string) {
     try {
-      const todo = await Todo.findOne({ where: { id: id, userId: userId } });
+      const todo = await this.todoRepository.findOne({ where: { id: id, userId: userId } });
       if (todo) {
         return todo;
       }
@@ -31,29 +34,30 @@ export class TodosService {
     }
   }
 
-  // create
   async createTodo(todo: CreateTodoDto, userId: string) {
     try {
-      const newTodo = await Todo.create({
+      const newTodo = this.todoRepository.create({
         ...todo,
         userId: userId,
       });
+      await this.todoRepository.save(newTodo);
       return newTodo;
     } catch (error) {
       throw new HttpException('Ошибка', HttpStatus.BAD_REQUEST);
     }
   }
 
-  // update
   async updateTodo(id: string, post: UpdateTodoDto, userId: string) {
     try {
-      const updateTodo = await Todo.findOne({ where: { id: id, userId: userId } });
-      await updateTodo.update({
-        ...post,
-      })
-      if (updateTodo) {
-        return updateTodo;
+      const updateTodo = await this.todoRepository.findOne({ where: { id: id, userId: userId } });
+      if (!updateTodo) {
+        throw new HttpException(
+          'Todo не найдено или не существует',
+          HttpStatus.NOT_FOUND,
+        );
       }
+      await this.todoRepository.update(id, post);
+      return updateTodo;
     } catch (error) {
       throw new HttpException(
         'Todo не найдено или не существует',
@@ -62,11 +66,16 @@ export class TodosService {
     }
   }
 
-  // delete
   async deleteTodo(id: string, userId: string) {
     try {
-      const deleting = await Todo.findOne({ where: { id: id, userId: userId } });
-      await deleting.destroy();
+      const deleting = await this.todoRepository.findOne({ where: { id: id, userId: userId } });
+      if (!deleting) {
+        throw new HttpException(
+          'Todo не найдено или не существует',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      await this.todoRepository.delete(id);
       return "Todo успешно удалена";
     } catch (error) {
       throw new HttpException(
@@ -76,10 +85,9 @@ export class TodosService {
     }
   }
 
-  //delete all
   async deleteAll(userId: string) {
     try {
-      await Todo.destroy({ where: { userId: userId } });
+      await this.todoRepository.delete({ userId: userId });
       return "Все Todo успешно удалены";
     } catch (error) {
       throw new HttpException('Ошибка', HttpStatus.BAD_REQUEST);

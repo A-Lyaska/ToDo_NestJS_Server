@@ -5,17 +5,21 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class TokenService {
+  constructor(
+    @InjectRepository(Token)
+    private readonly tokenRepository: Repository<Token>,
+  ) {}
 
-    async logoutUser() {
-        await Token.destroy();
-        return "Вы успешно вышли"
-    }
+  async logoutUser() {
+    await this.tokenRepository.clear();
+    return "Вы успешно вышли";
+  }
 
-    async checkToken(value: string) {
-        const identifiedToken = await Token.findOne({ where: { value: value } });
-        if (!identifiedToken) {
-            throw new NotFoundException('Неверный Token');
-        }
-        return identifiedToken.userId;
+  async checkToken(auth_token: string) {
+    const identifiedToken = await this.tokenRepository.findOne({ where: { auth_token: auth_token } });
+    if (!identifiedToken) {
+      throw new NotFoundException('Неверный Token');
     }
+    return identifiedToken.userId;
+  }
 }
